@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentació Appsedu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Estils bàsics per a les diapositives */
+        body {
+            font-family: 'Inter', sans-serif; /* Font suggerida */
+            overflow: hidden; /* Evitar scroll general */
+        }
+        .slide {
+            display: none; /* Ocultar totes les diapositives per defecte */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh; /* Ocupar tota l'alçada de la pantalla */
+            padding: 4rem; /* Més padding */
+            background-color: white;
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out;
+            overflow-y: auto; /* Permetre scroll si el contingut és llarg */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centrar contingut verticalment */
+            align-items: center; /* Centrar contingut horitzontalment */
+            text-align: center; /* Centrar text */
+        }
+        .slide.active {
+            display: flex; /* Mostrar la diapositiva activa */
+            opacity: 1;
+            z-index: 1;
+        }
+        /* Estils per a la navegació */
+        .nav-button {
+            position: fixed;
+            bottom: 2rem;
+            z-index: 10;
+            padding: 0.8rem 1.5rem; /* Botons més grans */
+            background-color: #007bff; /* Blau corporatiu (exemple) */
+            color: white;
+            border: none;
+            border-radius: 9999px; /* Completament rodons */
+            cursor: pointer;
+            font-size: 1.1rem; /* Text més gran */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .nav-button#prev {
+            left: 2rem;
+        }
+        .nav-button#next {
+            right: 2rem;
+        }
+        .slide-content {
+            max-width: 900px; /* Amplada màxima del contingut */
+            width: 100%;
+        }
+        /* Estil per a la imatge de la selva */
+        .jungle-svg {
+             width: 80%;
+             max-width: 500px;
+             height: auto;
+             margin: 1.5rem auto; /* Marge superior/inferior i centrat */
+        }
+        /* Estil per a icones grans */
+        .big-icon {
+            font-size: 4rem; /* Mida gran per a icones destacades */
+            margin-bottom: 1rem;
+            color: #007bff; /* Color d'accent */
+        }
+        /* Estils per a llistes */
+        ul {
+            list-style: none; /* Treure pics per defecte */
+            padding-left: 0;
+            text-align: left; /* Alinear text de llistes a l'esquerra dins del contenidor centrat */
+            display: inline-block; /* Perquè el contenidor s'ajusti al text */
+            margin-top: 1rem;
+        }
+        li {
+            margin-bottom: 0.75rem; /* Espai entre elements */
+            display: flex;
+            align-items: start; /* Alinear icona amb inici de text */
+        }
+        li i.fa-li {
+            margin-right: 0.5rem; /* Espai entre icona i text */
+            margin-top: 0.25rem; /* Ajust vertical de la icona */
+            color: #007bff; /* Color d'accent per a icones de llista */
+            width: 20px; /* Amplada fixa per alineació */
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem; /* Mida títol principal */
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+         h2 {
+            font-size: 1.8rem; /* Mida subtítols */
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+        p {
+             font-size: 1.1rem;
+             line-height: 1.7; /* Interlineat */
+             color: #444;
+             margin-bottom: 1rem;
+        }
+        .logo-placeholder {
+            width: 120px;
+            height: 40px;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #777;
+            border-radius: 0.25rem;
+            margin: 0.5rem;
+        }
+        .image-placeholder {
+            width: 100%;
+            max-width: 450px; /* Amplada màxima per a imatges */
+            height: 250px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            color: #999;
+            border-radius: 0.5rem; /* Cantonades arrodonides */
+            margin: 1.5rem auto; /* Marge superior/inferior i centrat */
+            border: 1px dashed #ccc;
+        }
+        .highlight {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 2rem;
+            font-style: italic;
+        }
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .benefit-item {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border-left: 5px solid #007bff;
+        }
+        .benefit-item i {
+             font-size: 1.8rem;
+             margin-bottom: 0.8rem;
+             color: #007bff;
+             display: block; /* Per ocupar espai i centrar */
+             text-align: center;
+        }
+         .benefit-item h3 {
+             font-size: 1.2rem;
+             font-weight: 600;
+             margin-bottom: 0.5rem;
+             text-align: center;
+         }
+         .benefit-item p {
+             font-size: 1rem;
+             text-align: center;
+             color: #555;
+         }
+         .logos-container {
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             gap: 1rem; /* Espai entre logos */
+             margin-top: 1rem;
+             flex-wrap: wrap; /* Per si hi ha molts logos */
+         }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="slide active">
+        <div class="slide-content">
+            <div class="logos-container mb-8">
+                 <div class="logo-placeholder">Logo GVA</div>
+                 <div class="logo-placeholder">Logo Conselleria</div>
+            </div>
+            <h1 class="text-4xl font-bold text-blue-700 mb-4">Appsedu: Navegant Segurs per la Selva Digital Educativa</h1>
+            <h2 class="text-2xl text-gray-600 mb-6">El Portal d'Aplicacions Autoritzades de la Conselleria d'Educació, Universitats i Ocupació</h2>
+            <div class="image-placeholder">Imatge conceptual: Educació + Tecnologia Segura</div>
+            <p class="mt-6 text-lg">[El teu nom/càrrec]</p>
+            <p class="text-sm text-gray-500">[Data de la ponència]</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="slide-content">
+            <h1 class="text-3xl font-semibold mb-4">Benvinguts a la Selva Digital</h1>
+            <h2 class="text-xl text-gray-600 mb-6">Un Món d'Oportunitats i Riscos</h2>
+            <p class="mb-4">Imaginem el món de les aplicacions educatives com una <span class="highlight">immensa i frondosa selva digital</span>. Plena de tresors meravellosos (eines per aprendre, crear, explorar)...</p>
+            <p class="mb-6">Però també amb <span class="highlight">perills ocults</span> (apps poc segures, recopilació de dades, continguts inadequats, riscos de privacitat).</p>
+
+            <svg class="jungle-svg" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="100" fill="#e2f0d9"/> <path d="M 10 90 Q 50 80, 80 50 T 120 10" stroke="#a5d6a7" stroke-width="5" fill="none" stroke-dasharray="5, 5"/>
+                <circle cx="120" cy="10" r="5" fill="#4caf50"/> <text x="125" y="15" font-size="6" fill="#388e3c">App Segura</text>
+                 <path d="M 10 90 Q 70 70, 100 80 T 150 60" stroke="#ffccbc" stroke-width="5" fill="none" stroke-dasharray="3, 3"/>
+                <path d="M 150 60 L 145 55 M 150 60 L 155 55 M 150 60 L 145 65 M 150 60 L 155 65" stroke="#f44336" stroke-width="1.5"/> <text x="155" y="65" font-size="6" fill="#d32f2f">Perill!</text>
+                 <circle cx="10" cy="90" r="4" fill="#fb8c00"/> <text x="15" y="95" font-size="6" fill="#e65100">Explorador</text>
+            </svg>
+
+            <p class="mt-6">Com a docents, famílies, responsables... som els <span class="highlight">guies</span>. La nostra responsabilitat és triar els camins segurs.</p>
+            <p class="font-semibold mt-4">Pregunta Clau: Com explorem amb confiança? Com distingim tresors de perills?</p>
+            <p class="mt-4">La resposta: La nostra brúixola, el nostre mapa, el nostre guia expert: <span class="highlight text-blue-700 text-xl">Appsedu</span>.</p>
+            <p class="note">Suggeriment Interactiu: Preguntar a l'audiència (mà alçada/eina): "Qui s'ha sentit perdut triant una app?"</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="slide-content">
+             <h1 class="text-3xl font-semibold mb-4">Per Què Necessitem un Mapa?</h1>
+             <h2 class="text-xl text-gray-600 mb-6">El Terreny Legal i els Riscos</h2>
+
+             <div class="grid md:grid-cols-2 gap-8 items-center">
+                 <div>
+                     <h3 class="text-lg font-semibold mb-2 text-left">El Panorama Anterior (La selva sense mapa)</h3>
+                     <ul class="fa-ul">
+                         <li><span class="fa-li"><i class="fas fa-map-marked-alt text-red-500"></i></span>Manca de centralització</li>
+                         <li><span class="fa-li"><i class="fas fa-user-secret text-red-500"></i></span>Riscos de seguretat i privacitat</li>
+                         <li><span class="fa-li"><i class="fas fa-cloud-slash text-red-500"></i></span>Dificultats pre-pandèmia</li>
+                     </ul>
+                     <div class="image-placeholder mt-4">Explorador confós amb mapa trencat</div>
+                 </div>
+                 <div>
+                     <h3 class="text-lg font-semibold mb-2 text-left">La Responsabilitat (El guarda forestal)</h3>
+                      <ul class="fa-ul">
+                         <li><span class="fa-li"><i class="fas fa-shield-alt text-green-600"></i></span>Garantir entorn segur</li>
+                         <li><span class="fa-li"><i class="fas fa-balance-scale text-green-600"></i></span>Complir normativa (RGPD, LOPDGDD, ENS...)</li>
+                         <li><span class="fa-li"><i class="fas fa-child text-green-600"></i></span>Protecció especial de menors</li>
+                     </ul>
+                     <div class="flex justify-center items-center mt-4 space-x-4">
+                        <i class="fas fa-file-contract fa-3x text-gray-500" title="RGPD"></i>
+                        <i class="fas fa-gavel fa-3x text-gray-500" title="LOPDGDD"></i>
+                        <i class="fas fa-lock fa-3x text-gray-500" title="ENS"></i>
+                     </div>
+                     <p class="mt-6 font-semibold">Necessitat d'una solució: <span class="highlight">El mapa oficial!</span></p>
+                 </div>
+             </div>
+             <p class="note">Connexió: La normativa són les "regles de la selva" per a la seguretat.</p>
+        </div>
+    </div>
+
+    <div class="slide">
+         <div class="slide-content">
+            <i class="fas fa-map-signs big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">Appsedu: El Teu Mapa i Guia Expert</h1>
+             <h2 class="text-xl text-gray-600 mb-6">La Solució Centralitzada i Fiable</h2>
+             <p>Plataforma innovadora: El <span class="highlight">mapa oficial</span> amb rutes <span class="highlight">verificades</span> i <span class="highlight">segures</span>.</p>
+             <p>Propòsit: Oferir un recurs <span class="highlight">confiable</span> i <span class="highlight">segur</span> (el guia expert) per trobar tresors (apps) sense caure en perills.</p>
+             <h3 class="text-lg font-semibold mt-6 mb-2">Objectius Específics (Eines del guia):</h3>
+             <ul class="fa-ul">
+                 <li><span class="fa-li"><i class="fas fa-search-location"></i></span>Protocols d'avaluació rigorosos (detectors de perills).</li>
+                 <li><span class="fa-li"><i class="fas fa-project-diagram"></i></span>Gestió centralitzada i desplegament (organització expedició).</li>
+                 <li><span class="fa-li"><i class="fas fa-campground"></i></span>Entorn digital segur i eficient (campament base protegit).</li>
+             </ul>
+             <div class="image-placeholder mt-6">Logo Appsedu sobre mapa o brúixola</div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="slide-content">
+            <i class="fas fa-atlas big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">Explorant el Mapa: El Catàleg d'Appsedu</h1>
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                 <div>
+                     <h3 class="text-lg font-semibold mb-2 text-left">Estructura (Regions del mapa):</h3>
+                     <ul class="fa-ul">
+                         <li><span class="fa-li"><i class="fab fa-linux"></i></span>LliureX</li>
+                         <li><span class="fa-li"><i class="fab fa-windows"></i></span><i class="fab fa-apple ml-1"></i> Windows/macOS</li>
+                         <li><span class="fa-li"><i class="fab fa-android"></i></span><i class="fab fa-apple ml-1"></i> Android/iOS (Tauletes, PDI)</li>
+                         <li><span class="fa-li"><i class="fas fa-globe"></i></span>Web (Identitat Digital)</li>
+                     </ul>
+                      <div class="image-placeholder mt-4">Icones de les plataformes</div>
+                 </div>
+                 <div>
+                     <h3 class="text-lg font-semibold mb-2 text-left">Informació Detallada (Llegendes):</h3>
+                     <ul class="fa-ul">
+                         <li><span class="fa-li"><i class="fas fa-info-circle"></i></span>Descripció i propòsit educatiu</li>
+                         <li><span class="fa-li"><i class="fas fa-check-circle text-green-500"></i></span><i class="fas fa-exclamation-triangle text-yellow-500 ml-1"></i><i class="fas fa-times-circle text-red-500 ml-1"></i> Estat (Autoritzada, En Avaluació...)</li>
+                         <li><span class="fa-li"><i class="fas fa-file-alt"></i></span>Polítiques de privacitat / Termes d'ús</li>
+                         <li><span class="fa-li"><i class="fas fa-user-shield"></i></span>Recomanacions protecció de dades</li>
+                         <li><span class="fa-li"><i class="fas fa-tags"></i></span>Metadades (nivell, tema...)</li>
+                     </ul>
+                      <div class="image-placeholder mt-4">Captura de fitxa d'aplicació (exemple)</div>
+                 </div>
+            </div>
+             <p class="mt-6"><i class="fas fa-search mr-2"></i><span class="highlight">Cercador i Filtres</span> (la lupa de l'explorador) per trobar fàcilment el que necessites.</p>
+        </div>
+    </div>
+
+    <div class="slide">
+         <div class="slide-content">
+             <i class="fas fa-drafting-compass big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">Com Cartografiem la Selva?</h1>
+             <h2 class="text-xl text-gray-600 mb-6">El Rigorós Procés d'Avaluació</h2>
+             <h3 class="text-lg font-semibold mt-6 mb-2">Cicle de Vida d'una App (L'expedició):</h3>
+             <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6 mt-6">
+                 <div class="text-center p-4 rounded-lg bg-gray-100 shadow">
+                     <i class="fas fa-file-import fa-2x text-blue-500 mb-2"></i>
+                     <p class="font-semibold">1. Sol·licitud</p>
+                     <p class="text-sm">(Avís nou territori)</p>
+                 </div>
+                 <i class="fas fa-arrow-right fa-2x text-gray-400 hidden md:block"></i>
+                 <i class="fas fa-arrow-down fa-2x text-gray-400 md:hidden"></i>
+                 <div class="text-center p-4 rounded-lg bg-gray-100 shadow">
+                     <i class="fas fa-search-plus fa-2x text-yellow-500 mb-2"></i>
+                     <p class="font-semibold">2. Avaluació</p>
+                     <p class="text-sm">(Anàlisi terreny)</p>
+                     <ul class="text-xs text-left mt-1 fa-ul">
+                        <li><span class="fa-li"><i class="fas fa-shield-virus"></i></span>Seguretat</li>
+                        <li><span class="fa-li"><i class="fas fa-gavel"></i></span>Normativa</li>
+                        <li><span class="fa-li"><i class="fas fa-ad"></i></span>No Publicitat</li>
+                     </ul>
+                 </div>
+                 <i class="fas fa-arrow-right fa-2x text-gray-400 hidden md:block"></i>
+                 <i class="fas fa-arrow-down fa-2x text-gray-400 md:hidden"></i>
+                 <div class="text-center p-4 rounded-lg bg-gray-100 shadow">
+                     <i class="fas fa-check-double fa-2x text-green-500 mb-2"></i>
+                     <p class="font-semibold">3. Desplegament</p>
+                     <p class="text-sm">(Marcar ruta segura)</p>
+                 </div>
+                  <i class="fas fa-arrow-right fa-2x text-gray-400 hidden md:block"></i>
+                 <i class="fas fa-arrow-down fa-2x text-gray-400 md:hidden"></i>
+                 <div class="text-center p-4 rounded-lg bg-gray-100 shadow">
+                     <i class="fas fa-sync-alt fa-2x text-purple-500 mb-2"></i>
+                     <p class="font-semibold">4. Actualitzacions</p>
+                     <p class="text-sm">(Revisar mapa)</p>
+                 </div>
+             </div>
+             <p class="note mt-8">Aquest procés detallat garanteix la confiança en les aplicacions del catàleg.</p>
+        </div>
+    </div>
+
+    <div class="slide">
+         <div class="slide-content">
+             <i class="fas fa-id-card big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">El Teu Passaport Digital</h1>
+             <h2 class="text-xl text-gray-600 mb-6">Identitat i Gestió de Consentiments</h2>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <p class="text-left mb-2"><i class="fas fa-key mr-2 text-yellow-500"></i><span class="highlight">Identitat Digital GVA</span> (El passaport de l'explorador): Accés unificat.</p>
+                    <p class="text-left"><i class="fas fa-door-open mr-2 text-red-500"></i><span class="highlight">Accés a Apps de Tercers</span> (Creuar fronteres): Facilitat vs. Implicacions.</p>
+                    <div class="image-placeholder mt-4">Icones: Targeta ID, Clau, Porta</div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-2 text-left">Rol d'Appsedu (Control de duanes):</h3>
+                     <ul class="fa-ul">
+                         <li><span class="fa-li"><i class="fas fa-info"></i></span><span class="highlight">Informació Clara</span> (Declaració de béns).</li>
+                         <li><span class="fa-li"><i class="fas fa-check-square"></i></span><span class="highlight">Consentiment Informat</span> (El teu visat: tu decideixes).</li>
+                         <li><span class="fa-li"><i class="fas fa-user-edit"></i></span><span class="highlight">Gestió Activa</span> (Segellar/cancel·lar visat).</li>
+                         <li><span class="fa-li"><i class="fas fa-users-cog"></i></span>Grups de Seguretat (Accés restringit).</li>
+                         <li><span class="fa-li"><i class="fas fa-database"></i></span>Base de Dades i Notificacions (Traçabilitat).</li>
+                     </ul>
+                      <div class="image-placeholder mt-4">Captura interfície consentiments (exemple)</div>
+                </div>
+            </div>
+             <p class="note mt-8">Emfatitzar el control i la transparència per a l'usuari.</p>
+        </div>
+    </div>
+
+    <div class="slide">
+         <div class="slide-content">
+             <i class="fab fa-linux big-icon"></i>
+             <h1 class="text-3xl font-semibold mb-4">LliureX i Appsedu</h1>
+             <h2 class="text-xl text-gray-600 mb-6">Equipats per a l'Exploració Segura</h2>
+             <p>LliureX: L'<span class="highlight">equipament base</span> de l'explorador valencià.</p>
+             <p>LliureX 23: <span class="highlight">Més de 250 eines (apps)</span> revisades i preparades per l'equip d'Appsedu.</p>
+             <p>Appsedu garanteix la <span class="highlight">confiabilitat</span> de l'equipament LliureX.</p>
+              <div class="logos-container mt-8">
+                 <div class="logo-placeholder">Logo LliureX</div>
+                 <i class="fas fa-link fa-2x text-gray-500"></i>
+                 <div class="logo-placeholder">Logo Appsedu</div>
+             </div>
+             <div class="image-placeholder mt-6">Icones d'aliança o eines d'exploració amb logos</div>
+        </div>
+    </div>
+
+    <div class="slide">
+         <div class="slide-content">
+            <i class="fas fa-gem big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">Els Tresors Descoberts</h1>
+            <h2 class="text-xl text-gray-600 mb-6">Beneficis d'Usar Appsedu</h2>
+
+            <div class="benefit-grid">
+                <div class="benefit-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Seguretat i Confiança</h3>
+                    <p>Rutes segures, tranquil·litat.</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-stopwatch"></i>
+                    <h3>Estalvi Temps i Esforç</h3>
+                    <p>Mapa clar, menys exploració a cegues.</p>
+                </div>
+                 <div class="benefit-item">
+                    <i class="fas fa-balance-scale"></i>
+                    <h3>Compliment Normatiu</h3>
+                    <p>Seguir les regles de la selva.</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Millora Pràctica Educativa</h3>
+                    <p>Accés als millors recursos.</p>
+                </div>
+                 <div class="benefit-item">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <h3>Facilitat d'Ús</h3>
+                    <p>Mapa fàcil de llegir.</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>Protecció de Dades</h3>
+                    <p>Exploradors joves, protegits.</p>
+                </div>
+                 <div class="benefit-item">
+                    <i class="fas fa-eye"></i>
+                    <h3>Transparència i Control</h3>
+                    <p>Decidir quines "fronteres" creuar.</p>
+                </div>
+                 <div class="benefit-item">
+                    <i class="fas fa-life-ring"></i>
+                    <h3>Suport Tècnic</h3>
+                    <p>Ajuda via gvaSAI.</p>
+                </div>
+            </div>
+             <p class="note mt-8">Suggeriment Interactiu: Preguntar quin benefici valoren més.</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="slide-content">
+             <i class="fas fa-hiking big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">Comença la Teua Expedició Segura!</h1>
+             <ul class="fa-ul text-lg mt-6">
+                 <li><span class="fa-li"><i class="fas fa-external-link-alt"></i></span><span class="highlight">Accés (Obrir el mapa):</span> [Indicar URL o com accedir]</li>
+                 <li><span class="fa-li"><i class="fas fa-route"></i></span><span class="highlight">Explora (Seguir les rutes):</span> Navega, cerca.</li>
+                 <li><span class="fa-li"><i class="fas fa-book-open"></i></span><span class="highlight">Informa't (Llegir la llegenda):</span> Descripcions, polítiques.</li>
+                 <li><span class="fa-li"><i class="fas fa-passport"></i></span><span class="highlight">Gestiona (Revisar el passaport):</span> Consentiments.</li>
+                 <li><span class="fa-li"><i class="fas fa-bullhorn"></i></span><span class="highlight">Participa (Informar nous territoris):</span> Sol·licita apps (gvaSAI).</li>
+                 <li><span class="fa-li"><i class="fas fa-question-circle"></i></span><span class="highlight">Aprèn Més (Manual explorador):</span> Guies i FAQ.</li>
+             </ul>
+             <div class="image-placeholder mt-8">Botó "Entra a Appsedu" / Icona Comunitat</div>
+             <p class="note mt-8">Animar a l'exploració activa del portal.</p>
+        </div>
+    </div>
+
+    <div class="slide">
+         <div class="slide-content">
+             <i class="fas fa-flag-checkered big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">Appsedu: El Nostre Compromís</h1>
+             <h2 class="text-xl text-gray-600 mb-6">Construint Junts un Futur Digital Més Segur</h2>
+             <p>Recapitulació: Appsedu és <span class="highlight">essencial</span> per a una exploració digital segura i responsable.</p>
+             <p>Visió: Projecte en <span class="highlight">constant evolució</span> (nous mapes, noves rutes).</p>
+             <p class="text-xl font-semibold mt-6 mb-4">Crida Final: Uneix-te a l'expedició!</p>
+             <p>(Adopció, ús conscient, col·laboració)</p>
+
+             <h3 class="text-lg font-semibold mt-8 mb-2">Agraïments (Companys de viatge):</h3>
+             <p>A l'audiència per la seua atenció.</p>
+             <div class="logos-container mt-4">
+                 <div class="logo-placeholder text-xs">DGIE</div>
+                 <div class="logo-placeholder text-xs">SGIIE</div>
+                 <div class="logo-placeholder text-xs">SICE</div>
+                 <div class="logo-placeholder text-xs">DPD GVA</div>
+                 <div class="logo-placeholder text-xs">DGTIC</div>
+             </div>
+             <div class="image-placeholder mt-6">Imatge final inspiradora / Logos col·laboradors</div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="slide-content">
+            <i class="fas fa-comments big-icon"></i>
+            <h1 class="text-3xl font-semibold mb-4">Preguntes?</h1>
+             <h2 class="text-xl text-gray-600 mb-6">Parlem de l'Expedició</h2>
+             <p class="mt-8 text-lg">Obrim el torn de preguntes.</p>
+             <div class="image-placeholder mt-8">Imatge oberta / Signe d'interrogació</div>
+        </div>
+    </div>
+
+    <button id="prev" class="nav-button" onclick="changeSlide(-1)" disabled>&lt; Anterior</button>
+    <button id="next" class="nav-button" onclick="changeSlide(1)">Següent &gt;</button>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const prevButton = document.getElementById('prev');
+        const nextButton = document.getElementById('next');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            // Ocultar diapositiva actual
+            slides[currentSlide].classList.remove('active');
+
+            // Calcular nou índex (circular) - Opcional, ací és lineal
+            // currentSlide = (index + totalSlides) % totalSlides;
+             currentSlide = Math.max(0, Math.min(index, totalSlides - 1)); // Lineal
+
+            // Mostrar nova diapositiva
+            slides[currentSlide].classList.add('active');
+
+            // Actualitzar estat dels botons
+            prevButton.disabled = currentSlide === 0;
+            nextButton.disabled = currentSlide === totalSlides - 1;
+
+             // Fer scroll a dalt de la diapositiva si hi ha contingut llarg
+             slides[currentSlide].scrollTop = 0;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Inicialitzar la primera diapositiva i botons
+        showSlide(0);
+
+         // Navegació amb tecles de fletxa
+         document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight' && !nextButton.disabled) {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft' && !prevButton.disabled) {
+                changeSlide(-1);
+            }
+        });
+
+    </script>
+</body>
+</html>
